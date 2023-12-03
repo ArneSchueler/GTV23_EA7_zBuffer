@@ -1,0 +1,77 @@
+<!DOCTYPE html5>
+<html>
+	<head>
+		<title>GTV23 EA7 Z-Buffer</title>
+		<link rel="stylesheet" href="main.css">
+		<script src="ext/gl-matrix.js"></script>
+		<script src="GVT_Src_vertexData_plane.js"></script>
+		<script src="GVT_Src_vertexData_drop.js"></script>
+		<script src="GVT_Src_vertexData_torus2.js"></script>
+		<script src="GVT_Src_vertexData_sphere.js"></script>
+		<script src="SHA_Src_tpl.js"></script>
+		<script type="x-shader/x-vertex" id="vertexshader">
+			precision mediump float;
+			
+			attribute vec3 aPosition;
+			attribute vec3 aNormal;
+			
+			uniform mat4 uPMatrix;
+			uniform mat4 uMVMatrix;
+			uniform mat3 uNMatrix;
+			uniform vec4 uColor;
+			
+			varying vec4 vColor;
+			
+			varying float displacement;
+			
+			void main(){
+				displacement = cos(aPosition.x) * cos(aPosition.z);			
+   				vec3 newPosition = aPosition + displacement * vec3(0.0, 1.0, 0.0);
+
+			    gl_Position = uPMatrix * uMVMatrix * vec4(newPosition, 1.0);
+				
+			    vec3 tNormal = uNMatrix * aNormal;
+			
+			    vColor = uColor;
+			}
+		</script>
+		<script type="x-shader/x-fragment" id="fragmentshader">
+			precision mediump float;
+			varying vec4 vColor;
+			varying float displacement;
+			
+			void main() {
+			    float depth = (gl_FragCoord.z / gl_FragCoord.w)*0.17;
+    			depth = 1.0 - depth;
+    			gl_FragColor = vec4(vec3(depth), 1.0);
+			}
+		</script>
+	</head>
+	<body onload="app.start()">
+		<canvas id="canvas" width="800" height="800"></canvas>
+		<div class="info" id="info">
+		<p class="content">
+			Z-Buffer visualisation for the module Graphical Visualisation Technologies (BHT MIM 20 W23).<br>
+			<br>
+			To move the camera clockwise (left) press the left arrow button.<br>
+			<br>
+			To move the camera counterclockwise (right) press the right arrow button.<br>
+			<br>
+			To move the camera up press "A".<br>
+			<br>
+			To move the camera down press "D".<br>
+			<br>
+			To move the camera forward press "W".<br>
+			<br>
+			To move the camera downward press "S".<br>
+			<br>
+		</p>
+		<p></p>
+		<p class="sources">
+			Sources:<br>
+			<a href="http://www.3d-meier.de/tut3/Seite170.html">3.163. Gerono Lemniskate Torus II</a><br>
+			<a href="http://www.3d-meier.de/tut3/Seite44.html">3.40. Tropfen</a><br>
+
+		</p>
+	</div>
+</html>
